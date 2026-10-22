@@ -5,6 +5,15 @@ from queue import Queue, Empty
 
 # Shared executor to avoid creating a new thread pool for each lookup
 
+def get_usable_hosts(network):
+    if network.version != 4:
+        raise ValueError("Usable host calculation supports IPv4 only.")
+
+    if network.prefixlen >= 31:
+        return network.num_addresses
+
+    return network.num_addresses - 2
+
 def lookup_hostname(ip, timeout=1):
     result = Queue(maxsize=1)
 
@@ -32,10 +41,7 @@ def parse_ip_input(ip_input):
         return ip, None
 
 def print_subnet_info(network):
-    usable_hosts = network.num_addresses
-
-    if usable_hosts > 2:
-        usable_hosts -= 2  # Subtract network and broadcast addresses
+    usable_hosts = get_usable_hosts(network)
 
     print("\n---Subnet Information---")
     print(f"Network: {network}")
