@@ -2,7 +2,7 @@ import unittest
 import socket
 from unittest.mock import patch
 from ipaddress import ip_network
-from main import parse_ip_input, get_usable_hosts, lookup_hostname
+from network_utils import parse_ip_input, get_usable_hosts, lookup_hostname
 
 
 class TestIPParsing(unittest.TestCase):
@@ -63,7 +63,7 @@ class TestSubnetCalculation(unittest.TestCase):
 
 class TestDNSLookup(unittest.TestCase):
 
-    @patch("main.socket.gethostbyaddr")
+    @patch("network_utils.socket.gethostbyaddr")
     def test_successful_lookup(self, mock_dns):
         mock_dns.return_value = (
             "dns.google",
@@ -76,7 +76,7 @@ class TestDNSLookup(unittest.TestCase):
         self.assertEqual(hostname, "dns.google")
         self.assertEqual(addresses, ["8.8.8.8"])
     
-    @patch("main.socket.gethostbyaddr")
+    @patch("network_utils.socket.gethostbyaddr")
     def test_failed_lookup(self, mock_dns):
         mock_dns.side_effect = socket.herror("No PTR record")
 
